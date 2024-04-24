@@ -1,0 +1,15 @@
+{
+  "domain": "ktw_its",
+  "name": "ITS Katowice",
+  "codeowners": [
+    "@grozycki"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/ktw_its",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": []
+}
