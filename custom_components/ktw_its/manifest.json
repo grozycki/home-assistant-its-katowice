@@ -6,11 +6,11 @@
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://www.home-assistant.io/integrations/ktw_its",
+  "documentation": "https://github.com/grozycki/home-assistant-its-katowice",
   "homekit": {},
   "iot_class": "cloud_polling",
   "requirements": [],
   "ssdp": [],
-  "zeroconf": [],
-  "version": "0.0.0"
+  "version": "0.1.0-alpha",
+  "zeroconf": []
 }
