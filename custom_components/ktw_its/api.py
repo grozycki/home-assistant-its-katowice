@@ -10,7 +10,7 @@ from .coordinator import KtwItsCameraImageDto, KtwItsSensorDto
 from collections.abc import Iterable
 
 from .sensor import KtwItsSensorEntityDescription
-from ..sensor import SensorDeviceClass
+from homeassistant.components.sensor import SensorDeviceClass
 import pytz
 
 from homeassistant.const import (
@@ -22,7 +22,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfSpeed, UnitOfTime, EntityCategory,
 )
-from ...helpers.device_registry import DeviceInfo, DeviceEntryType
+from homeassistant.helpers.device_registry import DeviceInfo, DeviceEntryType
 
 _LOGGER = logging.getLogger(__name__)
 
