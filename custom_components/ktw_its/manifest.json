@@ -9,6 +9,7 @@
   "documentation": "https://github.com/grozycki/home-assistant-its-katowice",
   "homekit": {},
   "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/grozycki/home-assistant-its-katowice/issues",
   "requirements": [],
   "ssdp": [],
   "version": "0.1.0-alpha",
