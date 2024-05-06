@@ -1,116 +1,86 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from homeassistant.components.image import (
     ImageEntityDescription,
     ImageEntity,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-)
-from . import KtwItsDataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     DOMAIN,
-    DEFAULT_NAME
+    ATTRIBUTION, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, STATE_ATTR_LONGITUDE, STATE_ATTR_LATITUDE
 )
 
-SCAN_INTERVAL = timedelta(seconds=10)
+SCAN_INTERVAL = timedelta(seconds=60)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    entities = await _get_image_entities(hass, coordinator)
-    async_add_entities(entities, False)
+    from ktw_its import KtwItsDataUpdateCoordinator
+    coordinator: KtwItsDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    api_data = await coordinator.fetch_data()
+    entities = [KtwItsImageEntity(
+        coordinator=coordinator,
+        entity_description=dto.entity_description,
+        hass=hass
+    ) for dto in api_data.values() if dto.platform == Platform.IMAGE]
+    async_add_entities(entities)
 
 
-async def _get_image_entities(hass: HomeAssistant, coordinator: KtwItsDataUpdateCoordinator) \
-        -> Iterable[KtwItsImageEntity]:
-    descriptions = []
-    cameras = await coordinator.get_cameras()
-    for feature in cameras['features']:
-        if feature['properties']['state'] == 1:
-            if feature['properties']['type'] == 'ptz':
-                count = 4
-            else:
-                count = 1
-            i = 0
-            while i < count:
-                descriptions.append(KtwItsImageEntity(
-                    hass,
-                    coordinator,
-                    KtwItsImageEntityDescription(
-                        key=str(feature['properties']['id']) + '-' + str(i),
-                        camera_id=feature['properties']['id'],
-                        camera_name=feature['properties']['name'],
-                        camera_description=feature['properties']['description'],
-                        image_id=i,
-                        longitude=feature['geometry']['coordinates'][0],
-                        latitude=feature['geometry']['coordinates'][1],
-                    )
-                ))
-                i += 1
+class KtwItsImageEntity(CoordinatorEntity, ImageEntity):
+    _attr_attribution = ATTRIBUTION
+    _attr_has_entity_name = True
+    _icon: str | None = None
+    __state_attributes: dict[str, str | float | datetime] | None = None
+    _unrecorded_attributes = frozenset({
+        STATE_ATTR_UPDATE_DATE,
+        STATE_ATTR_COLOR,
+        STATE_ATTR_LONGITUDE,
+        STATE_ATTR_LATITUDE
+    })
 
-    return descriptions
-
-
-class KtwItsImageEntity(ImageEntity):
     def __init__(
             self,
             hass: HomeAssistant,
             coordinator: KtwItsDataUpdateCoordinator,
-            description: KtwItsImageEntityDescription
+            entity_description: KtwItsImageEntityDescription
     ) -> None:
-        ImageEntity.__init__(self, hass)
-        self.entity_description = description
+        super().__init__(coordinator, context=entity_description.group)
+        ImageEntity.__init__(self, hass=hass)
+        self.entity_description = entity_description
+        self._attr_unique_id = entity_description.key
+        self._attr_name = entity_description.name
+        self._attr_device_info = entity_description.device_info
+        self._icon = entity_description.icon
+        self.entity_id = 'image.{0}'.format(entity_description.key)
+
         self._attr_entity_picture = 'https://its.katowice.eu/mapa/static/img/marker_camera_ptz--light.2d8c239a.svg'
-        _device_id = "ktw-its"
-        self._attr_has_entity_name = True
-        self._attr_name = description.camera_name + " " + description.camera_description
-        self._attr_unique_id = f"{_device_id}-{description.key.lower()}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, str(description.camera_id))},
-            manufacturer=DEFAULT_NAME,
-            name=DEFAULT_NAME,
-        )
-        self.coordinator = coordinator
-        self.camera_id: int = description.camera_id
-        self.image_id: int = description.image_id
-        self._latitude: float = description.latitude
-        self._longitude: float = description.longitude
+
+        self.__coordinator = coordinator
+        self.__camera_id: int = entity_description.camera_id
+        self.__image_id: int = entity_description.image_id
 
     @property
-    def extra_state_attributes(self) -> dict[str, str | float]:
-        return {
-            "latitude": self._latitude,
-            "longitude": self._longitude,
-        }
+    def extra_state_attributes(self) -> dict[str, str | float | datetime] | None:
+        return self.__state_attributes
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        """Handle updated coordinator."""
-        ##self._attr_image_url = 'https://its.katowice.eu/api/camera/image/372/image24-04-10_18-49-57-01_00013.jpg'
-        ##self._attr_image_last_updated = datetime.now()
-        ##super()._handle_coordinator_update()
+        if self.coordinator.data[self.entity_description.key]:
+            self._attr_image_last_updated = self.coordinator.data[self.entity_description.key].image_last_updated
+            self.__state_attributes = self.coordinator.data[self.entity_description.key].state_attributes
+            self.async_write_ha_state()
 
     async def async_image(self) -> bytes | None:
-        print('async_image')
-        # if self._cached_image:
-        #     return self._cached_image.content
-
-        camera_image_dto = await self.coordinator.get_camera_image_data(self.camera_id, self.image_id)
-        print(camera_image_dto)
-        self._attr_image_last_updated = camera_image_dto.last_updated
-        print(self._attr_image_last_updated)
-
-
-        return await self.coordinator.get_camera_image(self.camera_id, self.image_id)
+        image = await self.__coordinator.get_camera_image(self.__camera_id, self.__image_id)
+        await self.coordinator.async_request_refresh()
+        return image
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -120,5 +90,9 @@ class KtwItsImageEntityDescription(ImageEntityDescription):
     camera_name: str
     camera_description: str
     image_id: int
-    latitude: float
-    longitude: float
+    group: str
+    key: str
+    icon: str | None = None
+    device_info: DeviceInfo | None = None
+    options: list[str] | None = None
+    name: str | None = None

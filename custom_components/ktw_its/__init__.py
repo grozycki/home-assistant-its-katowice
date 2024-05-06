@@ -5,18 +5,34 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from .api.api import KtwItsApi
+from .api.camera import CameraApi
+from .api.http_client import HttpClient
+from .api.traffic import TrafficApi
+from .api.weather import WeatherApi
 from .const import DOMAIN
-from .api import KtwItsApi
 from .coordinator import KtwItsDataUpdateCoordinator
+import logging
 
 PLATFORMS: list[Platform] = [
-    Platform.SENSOR,
-    Platform.IMAGE
+    Platform.IMAGE,
+    Platform.SENSOR
 ]
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    ktw_its_coordinator = KtwItsDataUpdateCoordinator(hass, KtwItsApi())
+    http_client = HttpClient(logger=_LOGGER)
+    ktw_its_coordinator = KtwItsDataUpdateCoordinator(
+        hass=hass,
+        api=KtwItsApi(
+            weather_api=WeatherApi(http_client=http_client, logger=_LOGGER),
+            traffic_api=TrafficApi(http_client=http_client, logger=_LOGGER),
+            camera_api=CameraApi(http_client=http_client, logger=_LOGGER)
+        ),
+        logger=_LOGGER
+    )
     await ktw_its_coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})
@@ -33,3 +49,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    return True

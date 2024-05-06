@@ -1,9 +1,9 @@
+# coding=utf-8
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from datetime import timedelta
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -11,44 +11,33 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-
-from homeassistant.const import UnitOfTemperature
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.typing import StateType
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory, Platform
+from homeassistant.core import HomeAssistant
+from homeassistant.core import callback
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
-    UpdateFailed,
 )
-from homeassistant.core import callback
 from .const import (
     DOMAIN,
-    DEFAULT_NAME, ATTRIBUTION
-)
-from datetime import timedelta
-
-from homeassistant.const import (
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
-    CONCENTRATION_PARTS_PER_MILLION,
-    CONF_NAME,
-    PERCENTAGE,
-    UnitOfPressure,
-    UnitOfTemperature,
-    UnitOfSpeed,
+    ATTRIBUTION, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, STATE_ATTR_LONGITUDE, STATE_ATTR_LATITUDE
 )
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    api_data = await coordinator.api.fetch_data()
-    entities = [KtwItsSensorEntity(coordinator, dto.entity_description) for dto in api_data.values()]
-    async_add_entities(entities, False)
+    from ktw_its import KtwItsDataUpdateCoordinator
+    coordinator: KtwItsDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    api_data = await coordinator.fetch_data()
+    entities = [
+        KtwItsSensorEntity(coordinator=coordinator, entity_description=dto.entity_description)
+        for dto in api_data.values() if dto.platform == Platform.SENSOR
+    ]
+    async_add_entities(entities)
 
 
 class KtwItsSensorEntity(CoordinatorEntity, SensorEntity):
@@ -56,6 +45,12 @@ class KtwItsSensorEntity(CoordinatorEntity, SensorEntity):
     _attr_has_entity_name = True
     _icon: str | None = None
     _state_attributes: dict[str, str | float | datetime] | None = None
+    _unrecorded_attributes = frozenset({
+        STATE_ATTR_UPDATE_DATE,
+        STATE_ATTR_COLOR,
+        STATE_ATTR_LONGITUDE,
+        STATE_ATTR_LATITUDE
+    })
 
     def __init__(
             self,
@@ -97,3 +92,5 @@ class KtwItsSensorEntityDescription(SensorEntityDescription):
     icon: str | None = None
     device_info: DeviceInfo | None = None
     options: list[str] | None = None
+    name: str | None = None
+    entity_category: EntityCategory | None = None
