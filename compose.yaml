@@ -1,14 +1,28 @@
-version: "3.4"
-
 services:
+  python:
+    container_name: python
+    build:
+      context: ./
+      dockerfile: .docker/python/Dockerfile
+
   homeassistant:
-    build: .
+    container_name: homeassistant
+    build:
+      context: ./
+      dockerfile: .docker/homeassistant/Dockerfile
+    restart: unless-stopped
+    privileged: true
+    develop:
+      watch:
+        - action: sync
+          path: ./custom_components/ktw_its
+          target: /config/custom_components/ktw_its
     ports:
-      - target: 8123
-        published: 8123
-        protocol: tcp
+      - 8123:8123
     volumes:
-        - homeassistant_config:/config
+      - homeassistant-config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
 
 volumes:
-    homeassistant_config:
+  homeassistant-config:
