@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 import voluptuous as vol
 
@@ -22,12 +21,7 @@ class KtwItsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     MINOR_VERSION = 1
 
     async def async_step_user(self, info):
-        if info is not None:
-            pass  # TODO: process info
-
-        return self.async_show_form(
-            step_id="user", data_schema=vol.Schema({vol.Required("password"): str})
-        )
+        return self.async_create_entry(title="ITS Katowice", data={})
 
 
 class CannotConnect(HomeAssistantError):

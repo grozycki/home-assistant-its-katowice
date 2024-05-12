@@ -30,7 +30,7 @@ SCAN_INTERVAL = timedelta(seconds=60)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    from ktw_its import KtwItsDataUpdateCoordinator
+    from custom_components.ktw_its import KtwItsDataUpdateCoordinator
     coordinator: KtwItsDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
     api_data = await coordinator.fetch_data()
     entities = [
