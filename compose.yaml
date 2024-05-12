@@ -1,9 +1,9 @@
 services:
-  python:
-    container_name: python
-    build:
-      context: ./
-      dockerfile: .docker/python/Dockerfile
+#  python:
+#    container_name: python
+#    build:
+#      context: ./
+#      dockerfile: .docker/python/Dockerfile
 
   homeassistant:
     container_name: homeassistant
