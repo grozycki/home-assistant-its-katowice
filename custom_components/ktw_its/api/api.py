@@ -1,9 +1,9 @@
 import logging
 
-from ktw_its.api.camera import CameraApi
-from ktw_its.api.traffic import TrafficApi
-from ktw_its.api.weather import WeatherApi
-from ktw_its.dto import KtwItsCameraImageDto, KtwItsSensorDto
+from custom_components.ktw_its.api.camera import CameraApi
+from custom_components.ktw_its.api.traffic import TrafficApi
+from custom_components.ktw_its.api.weather import WeatherApi
+from custom_components.ktw_its.dto import KtwItsCameraImageDto, KtwItsSensorDto
 
 _LOGGER = logging.getLogger(__name__)
 

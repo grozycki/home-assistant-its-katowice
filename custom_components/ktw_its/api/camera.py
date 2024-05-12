@@ -5,12 +5,14 @@ from marshmallow import Schema, fields, post_load, INCLUDE
 from typing import Iterable
 
 from homeassistant.helpers.device_registry import DeviceInfo, DeviceEntryType
-from ktw_its.api.http_client import HttpClientInterface
+from custom_components.ktw_its.api.http_client import HttpClientInterface
 from logging import Logger
 
-from ktw_its.dto import KtwItsCameraImageDto
-from ktw_its.image import KtwItsImageEntityDescription
-from ktw_its.const import DEFAULT_NAME, DOMAIN
+
+from custom_components.ktw_its.image import KtwItsImageEntityDescription
+from custom_components.ktw_its.const import DEFAULT_NAME, DOMAIN
+
+from custom_components.ktw_its.dto import KtwItsCameraImageDto
 
 
 @dataclass(frozen=True, kw_only=True)

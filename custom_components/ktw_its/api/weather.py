@@ -13,9 +13,9 @@ from homeassistant.const import (
     UnitOfPressure,
     UnitOfTemperature,
     UnitOfSpeed, )
-from ktw_its.api.http_client import HttpClientInterface
-from ktw_its.dto import KtwItsSensorDto
-from ktw_its.sensor import KtwItsSensorEntityDescription
+from custom_components.ktw_its.api.http_client import HttpClientInterface
+from custom_components.ktw_its.dto import KtwItsSensorDto
+from custom_components.ktw_its.sensor import KtwItsSensorEntityDescription
 
 
 @dataclass(frozen=True, kw_only=True)

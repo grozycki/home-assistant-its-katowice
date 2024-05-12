@@ -11,18 +11,16 @@ services:
       context: ./
       dockerfile: .docker/homeassistant/Dockerfile
     restart: unless-stopped
-    privileged: true
+    privileged: false
     develop:
       watch:
-        - action: sync
+        - action: rebuild
           path: ./custom_components/ktw_its
           target: /config/custom_components/ktw_its
     ports:
       - 8123:8123
     volumes:
       - homeassistant-config:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
 
 volumes:
   homeassistant-config:

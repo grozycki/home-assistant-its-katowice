@@ -2,13 +2,13 @@ from collections.abc import Iterable
 from datetime import datetime, timezone, timedelta
 from logging import Logger
 
-from ktw_its.api.http_client import HttpClientInterface
-from ktw_its.dto import KtwItsSensorDto
-from ktw_its.sensor import KtwItsSensorEntityDescription
+from custom_components.ktw_its.api.http_client import HttpClientInterface
+from custom_components.ktw_its.dto import KtwItsSensorDto
+from custom_components.ktw_its.sensor import KtwItsSensorEntityDescription
 from homeassistant.helpers.device_registry import DeviceInfo, DeviceEntryType
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import UnitOfSpeed, UnitOfTime, EntityCategory
-from ktw_its.const import DEFAULT_NAME, DOMAIN, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, STATE_ATTR_LONGITUDE, \
+from custom_components.ktw_its.const import DEFAULT_NAME, DOMAIN, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, STATE_ATTR_LONGITUDE, \
     STATE_ATTR_LATITUDE
 from marshmallow import Schema, fields, post_load, EXCLUDE
 from dataclasses import dataclass

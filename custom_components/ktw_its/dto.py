@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from homeassistant.const import Platform
-from ktw_its.image import KtwItsImageEntityDescription
-from ktw_its.sensor import KtwItsSensorEntityDescription
+from custom_components.ktw_its.image import KtwItsImageEntityDescription
+from custom_components.ktw_its.sensor import KtwItsSensorEntityDescription
 
 
 @dataclass(frozen=False)

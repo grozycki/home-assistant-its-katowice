@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from .api.api import KtwItsApi
 from .api.camera import CameraApi
@@ -13,6 +12,8 @@ from .api.weather import WeatherApi
 from .const import DOMAIN
 from .coordinator import KtwItsDataUpdateCoordinator
 import logging
+from homeassistant import config_entries, core
+from homeassistant.const import Platform
 
 PLATFORMS: list[Platform] = [
     Platform.IMAGE,
@@ -50,5 +51,19 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     return unload_ok
 
+
+async def options_update_listener(
+        hass: core.HomeAssistant, config_entry: config_entries.ConfigEntry
+):
+    """Handle options update."""
+    await hass.config_entries.async_reload(config_entry.entry_id)
+
+
 async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    return True
+
+
+async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
+    """Set up the GitHub Custom component from yaml configuration."""
+    hass.data.setdefault(DOMAIN, {})
     return True
