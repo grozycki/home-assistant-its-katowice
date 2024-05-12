@@ -8,7 +8,6 @@ from homeassistant.helpers.device_registry import DeviceInfo, DeviceEntryType
 from custom_components.ktw_its.api.http_client import HttpClientInterface
 from logging import Logger
 
-
 from custom_components.ktw_its.image import KtwItsImageEntityDescription
 from custom_components.ktw_its.const import DEFAULT_NAME, DOMAIN
 
@@ -122,6 +121,9 @@ class Images:
         images: Images = ImagesSchema().loads(json_data=json_data)
         return images
 
+    def is_empty(self) -> bool:
+        return len(self.images) == 0
+
 
 class ImagesSchema(Schema):
     images = fields.List(fields.Nested(ImageSchema))
@@ -205,6 +207,10 @@ class CameraApi:
 
     async def get_camera_image(self, camera_id: int, image_id: int) -> bytes | None:
         images = await self.__get_camera_images(camera_id)
+        if images.__len__() == 0:
+            self.__logger.error("Camera " + str(camera_id) + " has no image with id " + str(image_id))
+            return None
+
         filename = images[image_id].filename
 
         return await self.__http_client.make_request_bytes(
@@ -220,6 +226,10 @@ class CameraApi:
             'https://its.katowice.eu/api/cameras/{0}/images'.format(str(camera_id))
         )
         images = Images.from_json(images_json)
+        if images.is_empty():
+            self.__logger.error("Camera " + str(camera_id) + " has no images")
+            return []
+
         image_last_updated = images.images[0].addTime
 
         self.__camera_images_data_valid_to[camera_id] = image_last_updated + timedelta(minutes=5)

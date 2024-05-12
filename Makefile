@@ -7,9 +7,6 @@ build: ## Builds the Docker images
 up: ## Start the docker hub in detached mode (no logs)
 	@$(DOCKER_COMP) up --watch --remove-orphans
 
-watch:
-	@$(DOCKER_COMP)  watch
-
 start:
 
 down:

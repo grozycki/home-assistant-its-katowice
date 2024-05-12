@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from datetime import datetime, timezone, timedelta
 from logging import Logger
 
+
 from custom_components.ktw_its.api.http_client import HttpClientInterface
 from custom_components.ktw_its.dto import KtwItsSensorDto
 from custom_components.ktw_its.sensor import KtwItsSensorEntityDescription

@@ -24,7 +24,11 @@ class HttpClient(HttpClientInterface):
         trace_config.on_request_end.append(self.__on_request_end)
         ssl_context = ssl.create_default_context(cafile=certifi.where())
         connector = aiohttp.TCPConnector(ssl=ssl_context)
-        self.session = aiohttp.ClientSession(connector=connector, trace_configs=[trace_config])
+        self.session = aiohttp.ClientSession(
+            connector=connector,
+            trace_configs=[trace_config],
+            timeout=aiohttp.ClientTimeout(total=5)
+        )
         self.logger: Logger = logger
 
     async def make_request(self, url: str) -> str:
