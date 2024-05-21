@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant
 from .api.api import KtwItsApi
 from .api.camera import CameraApi
 from .api.http_client import HttpClient
+from .api.parking_zones import ParkingZonesApi
 from .api.traffic import TrafficApi
 from .api.weather import WeatherApi
 from .const import DOMAIN
@@ -30,7 +31,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         api=KtwItsApi(
             weather_api=WeatherApi(http_client=http_client, logger=_LOGGER),
             traffic_api=TrafficApi(http_client=http_client, logger=_LOGGER),
-            camera_api=CameraApi(http_client=http_client, logger=_LOGGER)
+            camera_api=CameraApi(http_client=http_client, logger=_LOGGER),
+            parking_zones_api=ParkingZonesApi(http_client=http_client, logger=_LOGGER)
         ),
         logger=_LOGGER
     )
@@ -67,3 +69,6 @@ async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
     """Set up the GitHub Custom component from yaml configuration."""
     hass.data.setdefault(DOMAIN, {})
     return True
+
+
+
