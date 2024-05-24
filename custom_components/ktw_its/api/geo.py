@@ -1,17 +1,16 @@
 # coding=utf-8
 
-from abc import ABC, abstractmethod, ABCMeta
+from abc import ABC
 from dataclasses import dataclass, make_dataclass
-from typing import List
 
-from marshmallow import Schema, fields, post_load, INCLUDE, pre_load
-from shapely.geometry import Point, Polygon
+from marshmallow import Schema, fields, post_load, INCLUDE
+from shapely.geometry import Point as SPoint, Polygon as SPolygon
 
 
 @dataclass(frozen=True, kw_only=True)
 class Geometry:
     type: str
-    coordinates: List[List[List[float]]]
+    coordinates: list[list[list[float]]]
 
 
 class GeometrySchema(Schema):
@@ -57,7 +56,7 @@ class FeatureSchema(Schema):
 @dataclass(frozen=True, kw_only=True)
 class FeatureCollection:
     type: str
-    features: List[Feature]
+    features: list[Feature]
 
     @classmethod
     def from_json(cls, json_data: str, context: dict | None = None) -> "FeatureCollection":
@@ -74,5 +73,39 @@ class FeatureCollectionSchema(Schema):
         return FeatureCollection(**data)
 
 
+@dataclass(frozen=True, kw_only=True)
+class Coordinate:
+    latitude: float
+    longitude: float
+
+
+class Shape(ABC):
+    @classmethod
+    def from_geometry(cls, geometry: Geometry):
+        raise NotImplementedError
+
+
+class Point(Shape):
+    def __init__(self, coordinate: Coordinate):
+        self.coordinate = coordinate
+
+    @classmethod
+    def from_geometry(cls, geometry: Geometry):
+        pass
+
+
+class Polygon(Shape):
+    def __init__(self, coordinates: list[Coordinate]):
+        self.coordinates = coordinates
+
+    @classmethod
+    def from_geometry(cls, geometry: Geometry):
+        coordinates = [
+            Coordinate(latitude=latitude, longitude=longitude) for latitude, longitude in geometry.coordinates[0]
+        ]
+        return Polygon(coordinates=coordinates)
+
+
 def point_in_polygon(point: Point, polygon: Polygon) -> bool:
-    return point.within(polygon)
+    return SPoint(point.coordinate.latitude, point.coordinate.longitude).within(
+        SPolygon([(coordinate.latitude, coordinate.longitude) for coordinate in polygon.coordinates]))
