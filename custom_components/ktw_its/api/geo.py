@@ -89,6 +89,9 @@ class Point(Shape):
     def __init__(self, coordinate: Coordinate):
         self.coordinate = coordinate
 
+    def __str__(self):
+        return f"Point({self.coordinate.latitude}, {self.coordinate.longitude})"
+
     @classmethod
     def from_geometry(cls, geometry: Geometry):
         pass
@@ -98,10 +101,13 @@ class Polygon(Shape):
     def __init__(self, coordinates: list[Coordinate]):
         self.coordinates = coordinates
 
+    def __str__(self):
+        return f"Polygon({', '.join([str(coordinate) for coordinate in self.coordinates])})"
+
     @classmethod
     def from_geometry(cls, geometry: Geometry):
         coordinates = [
-            Coordinate(latitude=latitude, longitude=longitude) for latitude, longitude in geometry.coordinates[0]
+            Coordinate(latitude=latitude, longitude=longitude) for longitude, latitude, in geometry.coordinates[0]
         ]
         return Polygon(coordinates=coordinates)
 

@@ -1,6 +1,8 @@
 # coding=utf-8
 import logging
 
+from homeassistant.core import EventStateChangedData, Event
+
 from custom_components.ktw_its.api.camera import CameraApi
 from custom_components.ktw_its.api.parking_zones import ParkingZonesApi
 from custom_components.ktw_its.api.traffic import TrafficApi
@@ -33,3 +35,6 @@ class KtwItsApi:
 
     async def get_camera_image(self, camera_id: int, image_id: int) -> bytes | None:
         return await self.__camera_api.get_camera_image(camera_id, image_id)
+
+    def on_entity_state_change(self, event: Event[EventStateChangedData]):
+        self.__parking_zones_api.on_entity_state_change(event)

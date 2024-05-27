@@ -2,10 +2,11 @@
 from datetime import timedelta
 from logging import Logger
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, Event, EventStateChangedData, callback
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
+
 from .api.api import KtwItsApi
 from .dto import KtwItsCameraImageDto, KtwItsSensorDto
 
@@ -28,3 +29,7 @@ class KtwItsDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def get_camera_image(self, camera_id: int, image_id: int) -> bytes | None:
         return await self.__api.get_camera_image(camera_id, image_id)
+
+    @callback
+    def on_entity_state_change(self, event: Event[EventStateChangedData]) -> None:
+        self.__api.on_entity_state_change(event)

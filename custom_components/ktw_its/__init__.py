@@ -2,23 +2,27 @@
 
 from __future__ import annotations
 
+import logging
+
+from homeassistant import config_entries, core
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.event import async_track_state_change_event
+
 from .api.api import KtwItsApi
 from .api.camera import CameraApi
 from .api.http_client import HttpClient
-from .api.parking_zones import ParkingZonesApi
+from .api.parking_zones import ParkingZonesApi, ParkingZoneRepository
 from .api.traffic import TrafficApi
 from .api.weather import WeatherApi
 from .const import DOMAIN
 from .coordinator import KtwItsDataUpdateCoordinator
-import logging
-from homeassistant import config_entries, core
-from homeassistant.const import Platform
 
 PLATFORMS: list[Platform] = [
     Platform.IMAGE,
-    Platform.SENSOR
+    Platform.SENSOR,
+    Platform.DEVICE_TRACKER
 ]
 
 _LOGGER = logging.getLogger(__name__)
@@ -32,7 +36,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             weather_api=WeatherApi(http_client=http_client, logger=_LOGGER),
             traffic_api=TrafficApi(http_client=http_client, logger=_LOGGER),
             camera_api=CameraApi(http_client=http_client, logger=_LOGGER),
-            parking_zones_api=ParkingZonesApi(http_client=http_client, logger=_LOGGER)
+            parking_zones_api=ParkingZonesApi(
+                http_client=http_client,
+                repository=ParkingZoneRepository(logger=_LOGGER),
+                logger=_LOGGER
+            )
         ),
         logger=_LOGGER
     )
@@ -42,6 +50,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = ktw_its_coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    async_track_state_change_event(
+        hass, ['device_tracker.ktw_its_tracker'], ktw_its_coordinator.on_entity_state_change
+    )
 
     return True
 
@@ -69,6 +81,3 @@ async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
     """Set up the GitHub Custom component from yaml configuration."""
     hass.data.setdefault(DOMAIN, {})
     return True
-
-
-
