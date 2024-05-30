@@ -17,7 +17,7 @@ class KtwItsDataUpdateCoordinator(DataUpdateCoordinator):
             hass=hass,
             logger=logger,
             name="ITS Katowice",
-            update_interval=timedelta(seconds=30),
+            update_interval=timedelta(seconds=5),
         )
         self.__api = api
 

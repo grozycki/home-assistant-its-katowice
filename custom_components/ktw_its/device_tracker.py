@@ -32,9 +32,6 @@ class KtwItsTrackerEntity(CoordinatorEntity, TrackerEntity):
     _attr_unique_id = "ktw_its_tracker"
     _attr_should_poll = True
 
-    latitudes = [50.258911, 50.264892, 50.265354]
-
-    longitudes = [19.014115, 19.023892, 19.024354]
 
     @property
     def source_type(self) -> SourceType | str:
@@ -45,10 +42,10 @@ class KtwItsTrackerEntity(CoordinatorEntity, TrackerEntity):
     def latitude(self) -> float | None:
         """Return latitude value of the device."""
         # Return a random latitude from the list
-        return random.choice(self.latitudes)
+        return random.uniform(50.251511, 50.261511)
 
     @property
     def longitude(self) -> float | None:
         """Return longitude value of the device."""
         # Return a random latitude from the list
-        return random.choice(self.longitudes)
+        return random.uniform(18.994541, 19.029481)

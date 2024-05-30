@@ -13,6 +13,7 @@ from homeassistant.helpers.event import async_track_state_change_event
 from .api.api import KtwItsApi
 from .api.camera import CameraApi
 from .api.http_client import HttpClient
+from .api.messenger import EventBus
 from .api.parking_zones import ParkingZonesApi, ParkingZoneRepository
 from .api.traffic import TrafficApi
 from .api.weather import WeatherApi
@@ -30,6 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     http_client = HttpClient(logger=_LOGGER)
+    event_bus = hass.bus
     ktw_its_coordinator = KtwItsDataUpdateCoordinator(
         hass=hass,
         api=KtwItsApi(
@@ -39,7 +41,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             parking_zones_api=ParkingZonesApi(
                 http_client=http_client,
                 repository=ParkingZoneRepository(logger=_LOGGER),
-                logger=_LOGGER
+                logger=_LOGGER,
+                event_bus=event_bus
             )
         ),
         logger=_LOGGER

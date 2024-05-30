@@ -16,9 +16,11 @@ DOMAIN = "ktw_its"
 
 class KtwItsApi:
     def __init__(self,
-                 weather_api: WeatherApi, traffic_api: TrafficApi,
+                 weather_api: WeatherApi,
+                 traffic_api: TrafficApi,
                  camera_api: CameraApi,
-                 parking_zones_api: ParkingZonesApi) -> None:
+                 parking_zones_api: ParkingZonesApi
+                 ) -> None:
         self.__weather_api: WeatherApi = weather_api
         self.__traffic_api: TrafficApi = traffic_api
         self.__camera_api: CameraApi = camera_api
@@ -29,7 +31,7 @@ class KtwItsApi:
         data.update(await self.__weather_api.fetch_data())
         data.update(await self.__traffic_api.fetch_data())
         data.update(await self.__camera_api.fetch_data())
-        data.update(await self.__parking_zones_api.fetch_data())
+        await self.__parking_zones_api.fetch_data()
 
         return data
 
