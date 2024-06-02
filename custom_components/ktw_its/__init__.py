@@ -10,15 +10,15 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_state_change_event
 
-from .api.api import KtwItsApi
-from .api.camera import CameraApi
-from .api.http_client import HttpClient
-from .api.messenger import EventBus
-from .api.parking_zones import ParkingZonesApi, ParkingZoneRepository
-from .api.traffic import TrafficApi
-from .api.weather import WeatherApi
-from .const import DOMAIN
-from .coordinator import KtwItsDataUpdateCoordinator
+from custom_components.ktw_its.api.api import KtwItsApi
+from custom_components.ktw_its.api.camera import CameraApi
+from custom_components.ktw_its.api.http_client import HttpClient
+from custom_components.ktw_its.api.messenger import EventBus
+from custom_components.ktw_its.api.parking_zones import ParkingZonesApi, ParkingZoneRepository
+from custom_components.ktw_its.api.traffic import TrafficApi
+from custom_components.ktw_its.api.weather import WeatherApi
+from custom_components.ktw_its.const import DOMAIN
+from custom_components.ktw_its.coordinator import KtwItsDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [
     Platform.IMAGE,

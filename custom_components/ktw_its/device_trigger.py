@@ -1,4 +1,4 @@
-import voluptuous as vol
+import voluptuous as vol  # type: ignore
 from homeassistant.const import (
     CONF_TYPE,
 )

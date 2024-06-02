@@ -7,8 +7,8 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
-from .api.api import KtwItsApi
-from .dto import KtwItsCameraImageDto, KtwItsSensorDto
+from custom_components.ktw_its.api.api import KtwItsApi
+from custom_components.ktw_its.dto import KtwItsCameraImageDto, KtwItsSensorDto
 
 
 class KtwItsDataUpdateCoordinator(DataUpdateCoordinator):

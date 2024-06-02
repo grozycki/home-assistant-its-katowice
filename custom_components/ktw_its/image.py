@@ -13,10 +13,9 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from .const import (
-    DOMAIN,
-    ATTRIBUTION, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, STATE_ATTR_LONGITUDE, STATE_ATTR_LATITUDE
-)
+
+from custom_components.ktw_its.const import DOMAIN, ATTRIBUTION, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, \
+    STATE_ATTR_LONGITUDE, STATE_ATTR_LATITUDE
 
 SCAN_INTERVAL = timedelta(seconds=60)
 

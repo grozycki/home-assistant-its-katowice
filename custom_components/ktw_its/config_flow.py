@@ -13,7 +13,7 @@ from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import selector
 
-from .const import DOMAIN
+from custom_components.ktw_its.const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -12,10 +12,8 @@ from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
 )
 
-from . import KtwItsDataUpdateCoordinator
-from .const import (
-    DOMAIN
-)
+from custom_components.ktw_its import KtwItsDataUpdateCoordinator
+from custom_components.ktw_its.const import DOMAIN
 
 SCAN_INTERVAL = timedelta(seconds=10)
 

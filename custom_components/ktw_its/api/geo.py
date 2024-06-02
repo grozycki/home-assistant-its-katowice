@@ -4,7 +4,7 @@ from abc import ABC
 from dataclasses import dataclass, make_dataclass
 
 from marshmallow import Schema, fields, post_load, INCLUDE
-from shapely.geometry import Point as SPoint, Polygon as SPolygon
+from shapely.geometry import Point as SPoint, Polygon as SPolygon  # type: ignore
 
 
 @dataclass(frozen=True, kw_only=True)

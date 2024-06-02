@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -13,18 +12,16 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory, Platform
-from homeassistant.core import HomeAssistant
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
-from .const import (
-    DOMAIN,
-    ATTRIBUTION, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, STATE_ATTR_LONGITUDE, STATE_ATTR_LATITUDE
-)
+
+from custom_components.ktw_its.const import DOMAIN, ATTRIBUTION, STATE_ATTR_UPDATE_DATE, STATE_ATTR_COLOR, \
+    STATE_ATTR_LONGITUDE, STATE_ATTR_LATITUDE
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
