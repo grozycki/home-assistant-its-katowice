@@ -85,14 +85,14 @@ class ParkingZonesApi:
 
         if old_state is not None:
             old_zone = self.__repository.find_by_point(point=Point(Coordinate(
-                latitude=old_state.attributes.get('latitude'),
-                longitude=old_state.attributes.get('longitude')
+                latitude=old_state.attributes.get('latitude'),  # type: ignore
+                longitude=old_state.attributes.get('longitude')  # type: ignore
             )))
 
         if new_state is not None:
             new_zone = self.__repository.find_by_point(point=Point(Coordinate(
-                latitude=new_state.attributes.get('latitude'),
-                longitude=new_state.attributes.get('longitude')
+                latitude=new_state.attributes.get('latitude'),  # type: ignore
+                longitude=new_state.attributes.get('longitude')  # type: ignore
             )))
 
         if old_zone != new_zone:
@@ -101,6 +101,7 @@ class ParkingZonesApi:
             if old_zone is not None:
                 event_data = {
                     "device_id": entity_id,
+                    "entity_id": entity_id,
                     "type": "parking_zone_leave",
                 }
                 self.__event_bus.async_fire("ktw_its_event", event_data)
@@ -108,6 +109,7 @@ class ParkingZonesApi:
             if new_zone is not None:
                 event_data = {
                     "device_id": entity_id,
+                    "entity_id": entity_id,
                     "type": "parking_zone_enter",
                 }
                 self.__event_bus.async_fire("ktw_its_event", event_data)

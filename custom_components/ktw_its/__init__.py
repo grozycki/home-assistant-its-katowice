@@ -22,14 +22,13 @@ from .coordinator import KtwItsDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [
     Platform.IMAGE,
-    Platform.SENSOR,
-    Platform.DEVICE_TRACKER
+    Platform.SENSOR
 ]
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     http_client = HttpClient(logger=_LOGGER)
     event_bus = hass.bus
     ktw_its_coordinator = KtwItsDataUpdateCoordinator(
@@ -50,13 +49,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await ktw_its_coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = ktw_its_coordinator
+    hass.data[DOMAIN][config_entry.entry_id] = ktw_its_coordinator
 
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
-    async_track_state_change_event(
-        hass, ['device_tracker.ktw_its_tracker'], ktw_its_coordinator.on_entity_state_change
-    )
+    entity_ids = config_entry.options.get("device_trackers")
+    if entity_ids:
+        async_track_state_change_event(
+            hass, entity_ids, ktw_its_coordinator.on_entity_state_change
+        )
 
     return True
 
